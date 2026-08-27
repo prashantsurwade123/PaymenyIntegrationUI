@@ -1,0 +1,21 @@
+.hero-art{
+  background-image: linear-gradient(90deg, rgba(45, 33, 23, .78), rgba(45, 33, 23, .10) 53%, rgba(34, 21, 11, .40)), url('./assets/shivaji-hero.jpg.jpg') !important;
+  background-size: cover !important;
+  background-position: 53% center !important;
+}
+
+.hero-art .sun,
+.hero-art .statue,
+.hero-art .hills { display: none; }
+
+@media (max-width: 840px) {
+  .hero-art { background-position: center 30%; }
+}
+
+.admin-login-link { border: 0; background: none; color: #5e5041; font: 700 12px inherit; white-space: nowrap; cursor: pointer; }
+.admin-login-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; }.admin-modal-backdrop { position: absolute; inset: 0; background: rgba(30,24,17,.62); backdrop-filter: blur(4px); }.admin-modal-card { position: relative; width: min(410px,100%); background: #fffdfa; padding: 38px; border-radius: 8px; box-shadow: 0 24px 70px rgba(0,0,0,.28); }.admin-modal-close { position:absolute;top:12px;right:15px;border:0;background:none;color:#766b5c;font-size:27px;cursor:pointer }.admin-modal-mark { width:44px;height:44px;display:grid;place-items:center;border:1px solid #cf5e19;border-radius:50%;color:#cf5e19;font:700 22px 'Noto Serif Devanagari' }.admin-modal-eyebrow { color:#cf5e19;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;margin:21px 0 7px }.admin-modal-card h2 { margin:0;font:700 34px 'Playfair Display','Noto Serif Devanagari';color:#242019 }.admin-modal-subtitle { margin:7px 0 25px;color:#746a5d;font-size:13px }.admin-modal-form label { display:block;color:#393126;font-size:12px;font-weight:700;margin:15px 0 }.admin-modal-form input { display:block;width:100%;margin-top:7px;padding:12px;border:1px solid #dfd4c6;border-radius:4px;background:#fff;font:14px inherit;outline-color:#cf5e19 }.admin-modal-form button { width:100%;border:0;border-radius:4px;padding:13px;background:#cf5e19;color:#fff;font-weight:700;cursor:pointer }.admin-modal-form button span { margin-left:9px }.admin-modal-error { min-height:17px;margin:0 0 9px;color:#ae3427;font-size:11px }.admin-modal-note { margin:18px 0 0;padding-top:15px;border-top:1px solid #eee3d6;color:#81776b;font-size:10px;line-height:1.5 }
+
+@media (max-width: 840px) {
+  .admin-login-link { display: none; }
+  .admin-modal-card { padding: 30px 23px; }
+}
