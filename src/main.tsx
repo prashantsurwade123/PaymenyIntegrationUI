@@ -9,11 +9,92 @@ const copy = {
   en: { home:'Home', about:'About Us', project:'Statue Project', projectProgress:'Project Progress', newsCurrent:'News & Current Affairs', donate:'Donate', transparency:'Transparency', activities:'Activities', contact:'Contact', donateNow:'Donate Now', hero:'A Grand Statue of Chhatrapati Shivaji Maharaj', sub:'Let us build an historic vision through your participation.', learn:'Explore the project', raised:'Raised so far', target:'Fundraising target', donors:'Contributing citizens', remain:'Amount remaining', vision:'Heritage for today. Inspiration for tomorrow.', why:'More than a monument: an enduring source of inspiration rooted in the values of Swarajya.', progress:'Project progress', view:'View full project details', records:'Transparent records', name:'Full name', mobile:'Mobile number', email:'Email address', amount:'Donation amount', anonymous:'Make this donation anonymous', continue:'Continue securely', formTitle:'Join this historic undertaking', payment:'Continue to payment gateway', status:'Payment status', coming:'Coming soon' }
 };
 const fmt=(n:number)=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+const paymentApiBase = (import.meta.env.VITE_PAYMENT_API_BASE_URL ?? 'http://localhost:8082/api/v1').replace(/\/$/, '');
+
+async function paymentApiError(response: Response, fallback: string) {
+  const details = await response.text();
+  return new Error(details ? `${fallback} (${response.status}): ${details}` : `${fallback} (${response.status})`);
+}
 
 function Header({lang,setLang}:{lang:Lang;setLang:(l:Lang)=>void}) { const t=copy[lang]; const [open,setOpen]=useState(false); return <header><NavLink to="/" className="brand"><span className="seal">छ</span><span><b>शिवाजी महाराज संस्था</b><small>छत्रपती शिवाजी महाराज भव्य स्मारक प्रकल्प</small></span></NavLink><button className="menu" onClick={()=>setOpen(!open)} aria-label="Toggle navigation">☰</button><nav className={open?'open':''}><NavLink to="/">{t.home}</NavLink><NavLink to="/about">{t.about}</NavLink><NavLink to="/project">{t.project}</NavLink><NavLink to="/progress">{t.projectProgress}</NavLink><NavLink to="/news">{t.newsCurrent}</NavLink><NavLink to="/transparency">{t.transparency}</NavLink><NavLink to="/donate">{t.donate}</NavLink></nav><div className="header-actions"><button className="lang" onClick={()=>setLang(lang==='mr'?'en':'mr')}>{lang==='mr'?'English':'मराठी'}</button><NavLink className="donate-mini" to="/donate">{t.donateNow} <span>→</span></NavLink></div></header> }
 function Progress({lang}:{lang:Lang}) {const t=copy[lang];return <section className="progress wrap"><div className="progress-intro"><p className="eyebrow">{lang==='mr'?'जनसहभागाचे सामर्थ्य':'The power of participation'}</p><h2>{t.progress}</h2><p>{lang==='mr'?'आपली छोटीशी मदत या भव्य संकल्पनेला मोठी ताकद देऊ शकते.':'Every contribution moves this shared vision closer to reality.'}</p><NavLink to="/donate" className="link-arrow">{t.donateNow} →</NavLink></div><div className="fund-card"><div className="fund-heading"><span>{t.raised}</span><strong>{fmt(37500000)}</strong></div><div className="track"><span style={{width:'37.5%'}}/></div><div className="percent">37.5% <small>{lang==='mr'?'पूर्ण':'complete'}</small></div><div className="fund-stats"><div><small>{t.target}</small><b>{fmt(100000000)}</b></div><div><small>{t.remain}</small><b>{fmt(62500000)}</b></div><div><small>{t.donors}</small><b>12,450+</b></div></div></div></section>}
 function Home({lang}:{lang:Lang}) { const t=copy[lang]; return <><section className="hero"><div className="fort-pattern"/><div className="hero-copy"><p className="eyebrow light">शिवाजी महाराज संस्था</p><h1>{t.hero}</h1><p>{t.sub}</p><div className="cta"><NavLink className="btn primary" to="/donate">{t.donateNow} <span>→</span></NavLink><NavLink className="btn ghost" to="/project">{t.learn}</NavLink></div></div><div className="hero-art" aria-label="Illustration of Shivaji Maharaj statue"><div className="sun"/><div className="statue"><span>⚔</span></div><div className="hills"/></div></section><Progress lang={lang}/><section className="heritage wrap"><div><p className="eyebrow">{lang==='mr'?'आमची दृष्टी':'Our vision'}</p><h2>{t.vision}</h2><p>{t.why}</p><NavLink to="/about" className="link-arrow">{lang==='mr'?'संस्थेबद्दल जाणून घ्या':'Discover the Sanstha'} →</NavLink></div><div className="heritage-cards"><article><span>⌂</span><b>{lang==='mr'?'संस्कृती व इतिहास':'Culture & history'}</b><p>{lang==='mr'?'मराठा वारशाचे जतन आणि संवर्धन.':'Preserving the Maratha heritage.'}</p></article><article><span>♙</span><b>{lang==='mr'?'युवा प्रेरणा':'Youth inspiration'}</b><p>{lang==='mr'?'पुढच्या पिढीसाठी नेतृत्वाचे मूल्य.':'Leadership values for the next generation.'}</p></article><article><span>✦</span><b>{lang==='mr'?'समाज सहभाग':'Community first'}</b><p>{lang==='mr'?'प्रत्येक नागरिकाचा सन्माननीय सहभाग.':'A dignified role for every citizen.'}</p></article></div></section><section className="timeline-section"><div className="wrap"><p className="eyebrow">{lang==='mr'?'संकल्प ते साकार':'From vision to reality'}</p><h2>{lang==='mr'?'प्रकल्पाचा प्रवास':'Project journey'}</h2><div className="timeline">{[['01','Concept','पूर्ण'],['02','Planning','पूर्ण'],['03','Foundation','पूर्ण'],['04','Construction','65%'],['05','Installation','पुढील']].map(([n,a,b])=><div key={n}><i>{n}</i><b>{a}</b><small>{b}</small></div>)}</div></div></section><section className="news wrap"><div><p className="eyebrow">Updates</p><h2>{lang==='mr'?'नवीनतम बातम्या':'Latest from the Sanstha'}</h2></div><div className="news-grid">{['Foundation work enters its next phase','Community meeting on project progress','Shiv Jayanti cultural programme'].map((x,i)=><article key={x}><span>0{i+2} / 08 / 2026</span><h3>{x}</h3><a href="#news">Read update →</a></article>)}</div></section></>}
-function Donate({lang}:{lang:Lang}) { const t=copy[lang], [amount,setAmount]=useState(1001), [sent,setSent]=useState(false); return <main className="page donate-page"><div className="page-title"><p className="eyebrow">{lang==='mr'?'आपले योगदान, आपला अभिमान':'Your contribution, a shared legacy'}</p><h1>{t.formTitle}</h1><p>{lang==='mr'?'ही देणगी सुरक्षित पेमेंट गेटवेद्वारे पूर्ण केली जाईल.':'You will be securely redirected to an approved payment gateway.'}</p></div>{sent?<div className="success card"><span>✓</span><h2>{lang==='mr'?'देणगी ऑर्डर तयार झाली':'Donation order created'}</h2><p>{lang==='mr'?'पेमेंट पूर्ण झाल्यानंतर पावती उपलब्ध होईल.':'Your receipt will be available once the payment is verified.'}</p><button onClick={()=>setSent(false)}>{t.payment} →</button></div>:<form className="donation-form card" onSubmit={e=>{e.preventDefault();setSent(true)}}><div><label>{t.amount}</label><div className="amounts">{[501,1001,2501,5001,10001].map(v=><button type="button" className={amount===v?'selected':''} onClick={()=>setAmount(v)} key={v}>{fmt(v)}</button>)}</div><input aria-label={t.amount} type="number" min="1" value={amount} onChange={e=>setAmount(Number(e.target.value))}/></div><div className="fields"><label>{t.name}<input required placeholder={lang==='mr'?'तुमचे पूर्ण नाव':'Your full name'}/></label><label>{t.mobile}<input required type="tel" inputMode="numeric" placeholder="+91 00000 00000"/></label><label>{t.email}<input required type="email" placeholder="name@example.com"/></label><label>{lang==='mr'?'शहर':'City'}<input required placeholder={lang==='mr'?'तुमचे शहर':'Your city'}/></label></div><label className="check"><input type="checkbox"/> {t.anonymous}</label><p className="secure">⌘ {lang==='mr'?'वास्तविक पेमेंट प्रक्रिया बॅकएंड व गेटवेद्वारे सत्यापित केली जाईल.':'Payment status is verified by the backend and payment gateway.'}</p><button className="btn primary submit">{t.continue} →</button></form>}</main>}
+function Donate({lang}:{lang:Lang}) { const t=copy[lang]; const [amount,setAmount]=useState(1001); const [processing,setProcessing]=useState(false); const [success,setSuccess]=useState(false); const [error,setError]=useState<string|null>(null);
+ return <main className="page donate-page"><div className="page-title"><p className="eyebrow">{lang==='mr'?'आपले योगदान, आपला अभिमान':'Your contribution, a shared legacy'}</p><h1>{t.formTitle}</h1><p>{lang==='mr'?'ही देणगी सुरक्षित पेमेंट गेटवेद्वारे पूर्ण केली जाईल.':'You will be securely redirected to an approved payment gateway.'}</p></div>{success?<div className="success card"><span>✓</span><h2>{lang==='mr'?'देणगी पूर्ण झाली':'Donation successful'}</h2><p>{lang==='mr'?'पावती लवकरच उपलब्ध होईल.':'Your receipt will be available once the payment is verified.'}</p><button onClick={()=>setSuccess(false)}>{t.payment} →</button></div>:<form name="donationForm" className="donation-form card" onSubmit={async (e)=>{
+    e.preventDefault();
+    setError(null);
+    setProcessing(true);
+    try{
+      const form = e.currentTarget as HTMLFormElement;
+      const fd = new FormData(form);
+      const name = (fd.get('name')||'').toString();
+      const email = (fd.get('email')||'').toString();
+      const mobile = (fd.get('mobile')||'').toString();
+      const city = (fd.get('city')||'').toString();
+      const anonymous = fd.get('anonymous')==="on";
+
+      // Create order on backend
+      const amountInPaise = Math.round(amount * 100);
+      const receipt = `donation_${Date.now()}`;
+      const orderResp = await fetch(`${paymentApiBase}/orders`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          amount: amountInPaise,
+          currency: 'INR',
+          receipt,
+          notes: { name, email, mobile, city, anonymous: String(anonymous) }
+        })
+      });
+      if(!orderResp.ok) throw await paymentApiError(orderResp, 'Failed to create order');
+      const order = await orderResp.json();
+
+      // Get checkout config (key)
+      const cfgResp = await fetch(`${paymentApiBase}/checkout/config`);
+      if(!cfgResp.ok) throw await paymentApiError(cfgResp, 'Failed to fetch checkout config');
+      const cfg = await cfgResp.json();
+      const key = cfg.key || cfg.keyId || cfg.razorpayKey || cfg.razorpay_key || '';
+
+      // Load Razorpay script if needed
+      if(!(window as any).Razorpay){
+        await new Promise((resolve,reject)=>{
+          const s = document.createElement('script');
+          s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+        });
+      }
+
+      const options = {
+        key,
+        amount: order.amount || amountInPaise,
+        currency: order.currency || 'INR',
+        name: 'Shivaji Maharaj Sanstha',
+        description: 'Donation',
+        order_id: order.id || order.orderId || undefined,
+        prefill: { name, email, contact: mobile },
+        handler: async (razorResp:any) => {
+          try{
+            // Verify payment with backend
+            const verifyResp = await fetch(`${paymentApiBase}/payments/verify`, {
+              method: 'POST', headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({
+                razorpay_order_id: razorResp.razorpay_order_id,
+                razorpay_payment_id: razorResp.razorpay_payment_id,
+                razorpay_signature: razorResp.razorpay_signature
+              })
+            });
+            if(!verifyResp.ok) throw await paymentApiError(verifyResp, 'Payment verification failed');
+            setSuccess(true);
+          }catch(ve){
+            setError((ve as Error).message||'Verification failed');
+          }finally{ setProcessing(false); }
+        },
+        modal: { ondismiss: ()=>{ setProcessing(false); } }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    }catch(err){ setError((err as Error).message||'Unexpected error'); setProcessing(false); }
+  }}><div><label>{t.amount}</label><div className="amounts">{[501,1001,2501,5001,10001].map(v=><button type="button" className={amount===v?'selected':''} onClick={()=>setAmount(v)} key={v}>{fmt(v)}</button>)}</div><input name="amount" aria-label={t.amount} type="number" min="1" value={amount} onChange={e=>setAmount(Number(e.target.value))}/></div><div className="fields"><label>{t.name}<input name="name" required placeholder={lang==='mr'?'तुमचे पूर्ण नाव':'Your full name'}/></label><label>{t.mobile}<input name="mobile" required type="tel" inputMode="numeric" placeholder="+91 00000 00000"/></label><label>{t.email}<input name="email" required type="email" placeholder="name@example.com"/></label><label>{lang==='mr'?'शहर':'City'}<input name="city" required placeholder={lang==='mr'?'तुमचे शहर':'Your city'}/></label></div><label className="check"><input name="anonymous" type="checkbox"/> {t.anonymous}</label><p className="secure">⌘ {lang==='mr'?'वास्तविक पेमेंट प्रक्रिया बॅकएंड व गेटवेद्वारे सत्यापित केली जाईल.':'Payment status is verified by the backend and payment gateway.'}</p><div style={{display:'flex',gap:12,alignItems:'center'}}><button className="btn primary submit" disabled={processing}>{processing? 'Processing…' : t.continue + ' →'}</button>{error && <span style={{color:'crimson'}}>{error}</span>}</div></form>}</main> }
 function Project({lang}:{lang:Lang}){const t=copy[lang];return <main className="page"><div className="project-hero"><p className="eyebrow light">Monument project</p><h1>{t.hero}</h1><p>{lang==='mr'?'स्वराज्याच्या विचारांचे सन्माननीय आणि चिरस्थायी स्मारक.':'A dignified, lasting monument to the ideals of Swarajya.'}</p></div><section className="details wrap">{[['Proposed height','210 ft'],['Location','Maharashtra, India'],['Design concept','Maratha heritage'],['Expected completion','To be announced']].map(([a,b])=><div key={a}><small>{a}</small><b>{b}</b></div>)}</section><section className="wrap narrative"><p className="eyebrow">Project vision</p><h2>{lang==='mr'?'भावी पिढ्यांसाठी प्रेरणास्थान':'A landmark for future generations'}</h2><p>{t.why} {lang==='mr'?'प्रत्येक टप्प्याची माहिती आणि आर्थिक नोंदी सार्वजनिकरीत्या उपलब्ध केल्या जातील.':'Progress and financial information will be shared transparently at every milestone.'}</p></section></main>}
 function Transparency({lang}:{lang:Lang}) {const t=copy[lang];return <main className="page"><div className="page-title"><p className="eyebrow">{t.records}</p><h1>{lang==='mr'?'विश्वासार्ह आणि स्पष्ट माहिती':'Every rupee, clearly accounted for'}</h1><p>{lang==='mr'?'अंतिम आकडेवारी आणि अहवाल बॅकएंड API मधून प्रकाशित होतील.':'Final figures and reports will be published through the backend API.'}</p></div><section className="wrap dashboard"><div className="chart card"><h3>Fund collection</h3><div className="ring"><b>37.5%</b></div><p>{fmt(37500000)} of {fmt(100000000)}</p></div><div className="chart card"><h3>Fund utilization</h3><div className="bars">{[60,42,74,30,52].map((v,i)=><i key={i} style={{height:`${v}%`}}/>)}</div><small>Jan &nbsp; Feb &nbsp; Mar &nbsp; Apr &nbsp; May</small></div><div className="expense card"><h3>Utilization categories</h3>{[['Construction',42],['Statue design',23],['Site & land',18],['Administration',7]].map(([a,b])=><p key={String(a)}><span>{a}</span><b>{b}%</b></p>)}</div></section><section className="wrap report-list"><h2>{lang==='mr'?'अहवाल आणि कागदपत्रे':'Reports & documents'}</h2>{['Annual Report 2025–26','Approved Project Estimate','Fund Utilization Report'].map(x=><a href="#document" key={x}>▣ {x}<span>Download PDF →</span></a>)}</section></main>}
 function Simple({lang,kind}:{lang:Lang;kind:string}) {const t=copy[lang];const title=kind==='about'?t.about:kind==='activities'?t.activities:t.contact;const isAbout=kind==='about';return <main className="page"><div className="page-title"><p className="eyebrow">Shivaji Maharaj Sanstha</p><h1>{title}</h1><p>{isAbout?(lang==='mr'?'स्वराज्याच्या मूल्यांनी प्रेरित समाजाभिमुख संस्था.':'A community-driven organisation inspired by the values of Swarajya.'):t.coming}</p></div><section className="wrap narrative">{isAbout?<>{<h2>{lang==='mr'?'आमचे उद्दिष्ट':'Our purpose'}</h2>}<p>{lang==='mr'?<>शिवाजी महाराज संस्था ही <strong>छत्रपती शिवाजी महाराजांचे विचार, मूल्ये आणि महान वारसा जतन व पुढील पिढ्यांपर्यंत पोहोचवण्याच्या उद्देशाने कार्य करणारी समाजाभिमुख संस्था</strong> आहे. छत्रपती शिवाजी महाराजांनी दिलेली स्वराज्याची संकल्पना, शौर्य, न्याय, सुशासन, स्वाभिमान आणि सामाजिक बांधिलकी या मूल्यांपासून प्रेरणा घेऊन संस्था विविध सामाजिक, सांस्कृतिक आणि जनजागृतीपर उपक्रम राबविण्यासाठी कार्यरत आहे.</>:<>Shivaji Maharaj Sanstha is a community-driven organization dedicated to preserving and promoting the ideals, values, and legacy of <strong>Chhatrapati Shivaji Maharaj</strong>. Inspired by his vision of Swarajya, courage, justice, good governance, and social responsibility, the Sanstha works towards bringing people together for meaningful cultural and social initiatives.</>}</p></>:<><h2>{kind==='activities'?'Culture, education and community participation':'Get in touch with the Sanstha'}</h2><p>{lang==='mr'?'संस्थेची अधिकृत माहिती लवकरच येथे उपलब्ध होईल.':'Official information from the Sanstha will be available here shortly.'}</p></>}</section></main>}
