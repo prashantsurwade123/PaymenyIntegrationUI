@@ -1,0 +1,1 @@
+var e=`/assets/shivaji-raigad--xoRti35.jpg`;export{e as t};

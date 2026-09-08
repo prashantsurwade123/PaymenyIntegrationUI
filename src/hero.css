@@ -4,6 +4,42 @@
   background-position: 53% center !important;
 }
 
+/* Keep the home-page title balanced with the statue image. */
+.hero .hero-copy h1 {
+  font-size: clamp(30px, 3.3vw, 48px);
+  line-height: 1.45;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+}
+
+.hero .hero-copy {
+  min-width: 0;
+  width: min(650px, calc(44vw - 28px));
+}
+
+.hero .cta { flex-wrap: wrap; }
+
+@media (max-width: 840px) {
+  section.hero {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+  .hero .hero-copy {
+    width: 100%;
+    max-width: none;
+    padding: 48px 28px 36px;
+  }
+  .hero .hero-art {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-height: 300px;
+    flex: 1 0 300px;
+  }
+}
+
 .hero-art .sun,
 .hero-art .statue,
 .hero-art .hills { display: none; }
