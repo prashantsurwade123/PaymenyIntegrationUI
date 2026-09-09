@@ -9,7 +9,7 @@ test('public pages fit phone, tablet and desktop widths in both languages', asyn
   test.setTimeout(180000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  for (const width of [320, 375, 390, 412, 768, 1024, 1366, 1440]) {
+  for (const width of [320, 360, 375, 390, 412, 430, 768, 1024, 1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const lang of ['en', 'mr']) {
       await page.goto('/');
@@ -93,12 +93,21 @@ test('donation retains the order and verification API contract', async ({ page }
   expect(verifyBody).toEqual({ razorpay_order_id: 'order_regression', razorpay_payment_id: 'pay_regression', razorpay_signature: 'test_signature' });
   await expect(page.locator('.donation-confirmation')).toContainText('pay_regression');
   await expect(page.getByRole('button', { name: 'Share Campaign' })).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (url: string) => { (window as any).copiedCampaign = url; } } });
+  });
+  await page.getByRole('button', { name: 'Share Campaign' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Campaign link copied.' })).toBeVisible();
+  expect(await page.evaluate(() => (window as any).copiedCampaign)).toMatch(/^https?:\/\//);
+  await page.getByRole('link', { name: 'Back to Home', exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test('failed verification never shows payment success', async ({ page }) => {
   await page.route('**/checkout/config', route => route.fulfill({ json: { key: 'rzp_test_regression' } }));
   await page.route('**/orders', route => route.fulfill({ json: { id: 'order_regression', amount: 100000, currency: 'INR' } }));
-  await page.route('**/payments/verify', route => route.fulfill({ status: 400, body: 'Invalid signature' }));
+  await page.route('**/payments/verify', route => route.fulfill({ status: 400, body: 'InternalException: private backend stack trace' }));
   await page.addInitScript(() => {
     localStorage.setItem('lang', 'en');
     (window as any).Razorpay = class { constructor(public options: any) {} on() {} open() { this.options.handler({ razorpay_order_id: this.options.order_id, razorpay_payment_id: 'pay_invalid', razorpay_signature: 'invalid' }); } };
@@ -107,6 +116,7 @@ test('failed verification never shows payment success', async ({ page }) => {
   for (const [name, value] of Object.entries({ name: 'Test', mobile: '9999999999', email: 'test@example.com', city: 'Pune' })) await page.locator(`input[name=${name}]`).fill(value);
   await page.getByRole('button', { name: 'Proceed to Payment' }).click();
   await expect(page.getByRole('alert')).toContainText('Payment verification failed');
+  await expect(page.getByRole('alert')).not.toContainText('InternalException');
   await expect(page.locator('.success.card')).toHaveCount(0);
 });
 
@@ -141,4 +151,40 @@ test('PWA precaches static pages and excludes payment, admin and API responses',
   await expect(page.locator('main h1')).toBeVisible();
   await page.goto('/donate').catch(() => {});
   expect(await page.locator('form[name=donationForm]').count()).toBe(0);
+});
+
+test('install prompt waits for engagement and remembers dismissal', async ({ page }) => {
+  await page.clock.install();
+  await page.addInitScript(() => localStorage.setItem('lang', 'en'));
+  await page.goto('/');
+  await expect(page.locator('.campaign-hero h1')).toBeVisible();
+  await page.evaluate(() => {
+    const event = new Event('beforeinstallprompt', { cancelable: true });
+    Object.assign(event, { prompt: async () => {}, userChoice: Promise.resolve({ outcome: 'dismissed' }) });
+    window.dispatchEvent(event);
+  });
+  const banner = page.getByRole('complementary', { name: 'Install the app' });
+  await expect(banner).toHaveCount(0);
+  await page.clock.fastForward(31000);
+  await page.evaluate(() => { window.scrollTo({ top: 600, behavior: 'instant' }); window.dispatchEvent(new Event('scroll')); });
+  await expect(banner).toBeVisible();
+  await banner.getByRole('button', { name: 'Not now' }).click();
+  await expect(banner).toHaveCount(0);
+  expect(await page.evaluate(() => Number(localStorage.getItem('install-dismissed-at')))).toBeGreaterThan(0);
+  await page.reload();
+  await page.clock.fastForward(31000);
+  await page.evaluate(() => { window.scrollTo({ top: 600, behavior: 'instant' }); window.dispatchEvent(new Event('scroll')); });
+  await expect(banner).toHaveCount(0);
+});
+
+test('Marathi metadata remains readable and missing route chunks offer recovery', async ({ browser }) => {
+  const context = await browser.newContext({ baseURL: 'http://127.0.0.1:4173', serviceWorkers: 'block' });
+  const page = await context.newPage();
+  await page.goto('/about');
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /श्री शिव प्रतिष्ठान/);
+  await page.route('**/InformationPages-*.js', route => route.abort());
+  await page.goto('/project');
+  await expect(page.getByRole('alert')).toContainText('पान उघडता आले नाही');
+  await expect(page.getByRole('button', { name: 'पुन्हा प्रयत्न करा' })).toBeVisible();
+  await context.close();
 });

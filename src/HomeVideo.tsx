@@ -16,7 +16,7 @@ export function HomeVideo({ lang }: { lang: 'mr' | 'en' }) {
         <iframe
           src="https://www.youtube-nocookie.com/embed/IlA-2prfgzI"
           title={lang === 'mr' ? 'मुख्यपृष्ठावरील YouTube व्हिडिओ' : 'Featured YouTube video'}
-          loading="eager"
+          loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen

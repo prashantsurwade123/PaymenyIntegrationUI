@@ -3,7 +3,7 @@ import type { Lang } from './Campaign';
 export function ShareCampaign({ lang }: { lang: Lang }) {
   const [message, setMessage] = useState('');
   const [manual, setManual] = useState(false);
-  const url = `${window.location.origin}/`;
+  const url = new URL('/', import.meta.env.VITE_SITE_URL || window.location.origin).href;
   const mr = lang === 'mr';
   const share = async () => {
     try {

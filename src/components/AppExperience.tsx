@@ -4,7 +4,48 @@ import { clearInstall, deferredInstall, updateApp } from '../pwa';
 import type { Lang } from './Campaign';
 
 const pageNames: Record<string, [string, string]> = {
-  '/': ['Statue initiative', 'भव्य स्मारक प्रकल्प'], '/about': ['About Us', 'आमच्याबद्दल'], '/project': ['Statue Project', 'पुतळा प्रकल्प'], '/progress': ['Project Progress', 'प्रकल्प प्रगती'], '/news': ['News & Updates', 'बातम्या'], '/transparency': ['Transparency', 'पारदर्शकता'], '/donate': ['Donate', 'देणगी'],
+  "/": [
+    "Statue initiative",
+    "भव्य स्मारक प्रकल्प"
+  ],
+  "/about": [
+    "About Us",
+    "आमच्याबद्दल"
+  ],
+  "/project": [
+    "Statue Project",
+    "पुतळा प्रकल्प"
+  ],
+  "/progress": [
+    "Project Progress",
+    "प्रकल्प प्रगती"
+  ],
+  "/news": [
+    "News & Updates",
+    "बातम्या"
+  ],
+  "/transparency": [
+    "Transparency",
+    "पारदर्शकता"
+  ],
+  "/donate": [
+    "Donate",
+    "देणगी"
+  ],
+  "/activities": [
+    "Activities",
+    "उपक्रम"
+  ]
+};
+const pageDescriptions: Record<string, [string, string]> = {
+  '/': ['Discover Shri Shiv Pratishthan’s Chhatrapati Shivaji Maharaj statue initiative, its vision and ways to participate.', "श्री शिव प्रतिष्ठानचा छत्रपती शिवाजी महाराज पुतळा प्रकल्प आणि सहभागाची माहिती जाणून घ्या."],
+  '/about': ['Learn about Shri Shiv Pratishthan and its commitment to heritage and community participation.', "श्री शिव प्रतिष्ठानची ओळख, वारसा जतन आणि सामाजिक सहभागाची माहिती."],
+  '/project': ['Explore the vision and proposed experience of the Chhatrapati Shivaji Maharaj statue project.', "छत्रपती शिवाजी महाराज पुतळा प्रकल्पाचा संकल्प आणि प्रस्तावित स्वरूप जाणून घ्या."],
+  '/progress': ['Follow the project journey, from concept and planning to construction and installation.', "संकल्पनेपासून उभारणी आणि स्थापनेपर्यंत प्रकल्पाचा प्रवास जाणून घ्या."],
+  '/news': ['Read heritage stories and updates from Shri Shiv Pratishthan.', "श्री शिव प्रतिष्ठानचे वारसाविषयक लेख आणि घडामोडी वाचा."],
+  '/transparency': ['Review fundraising information and the availability of project reports.', "निधी संकलनाची माहिती आणि प्रकल्प अहवालांची उपलब्धता पहा."],
+  '/donate': ['Participate in the statue initiative with a one-time donation through the payment gateway.', "एकरकमी देणगी देऊन पुतळा प्रकल्पात सहभागी व्हा."],
+  '/activities': ['Explore the Sanstha’s cultural and community initiatives.', "संस्थेचे सांस्कृतिक आणि सामाजिक उपक्रम जाणून घ्या."],
 };
 const standalone = () => window.matchMedia('(display-mode: standalone)').matches || Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
 const iosSafari = () => /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|EdgiOS/.test(navigator.userAgent);
@@ -41,6 +82,9 @@ export function AppExperience({ lang }: { lang: Lang }) {
     const title = `${pageNames[location.pathname]?.[mr ? 1 : 0] || (mr ? 'श्री शिव प्रतिष्ठान' : 'Shri Shiv Pratishthan')} | श्री शिव प्रतिष्ठान`;
     document.title = title;
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+    const description = (pageDescriptions[location.pathname] || pageDescriptions['/'])[mr ? 1 : 0];
+    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
     const publicOrigin = import.meta.env.VITE_SITE_URL || window.location.origin;
     const url = new URL(location.pathname, publicOrigin).href;
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);

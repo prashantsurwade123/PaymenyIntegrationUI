@@ -8,6 +8,12 @@ const links = [
   ['/progress', 'Project Progress', 'प्रकल्प प्रगती'], ['/news', 'News & Updates', 'बातम्या व घडामोडी'], ['/transparency', 'Transparency', 'पारदर्शकता'], ['/donate', 'Donate', 'देणगी'],
 ];
 export function SiteHeader({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => void }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 12);
+    update(); window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, []);
   const [open, setOpen] = useState(false);
   const drawer = useRef<HTMLDialogElement>(null);
   const { pathname } = useLocation();
@@ -26,7 +32,7 @@ export function SiteHeader({ lang, setLang }: { lang: Lang; setLang: (lang: Lang
   const login = () => { setOpen(false); window.setTimeout(openAdminLogin, 0); };
   return <>
     <a className="skip-link" href="#page-content">{mr ? 'मुख्य मजकुराकडे जा' : 'Skip to content'}</a>
-    <header className="site-header">
+    <header className="site-header" data-scrolled={scrolled}>
       <button className="drawer-trigger" type="button" aria-label={mr ? 'मेनू उघडा' : 'Open menu'} aria-haspopup="dialog" aria-expanded={open} aria-controls="mobile-drawer" onClick={() => setOpen(true)}><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       <NavLink to="/" className="brand"><span className="seal" aria-hidden="true">छ</span><span><b>श्री शिव प्रतिष्ठान</b><small>{mr ? 'वारसा जपूया, प्रेरणा पोहोचवूया' : 'Preserving heritage, inspiring tomorrow'}</small></span></NavLink>
       <nav className="desktop-navigation" aria-label={mr ? 'मुख्य मेनू' : 'Main navigation'}>{navigation}</nav>

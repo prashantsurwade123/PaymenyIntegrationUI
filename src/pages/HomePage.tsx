@@ -1,3 +1,4 @@
+import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import { lazy, Suspense } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FundraisingProgress, useCampaign, type Lang } from '../components/Campaign';
@@ -22,9 +23,9 @@ export default function HomePage({ lang }: { lang: Lang }) {
       ['people', 'Youth inspiration', 'युवा प्रेरणा', 'Leadership values for the next generation.', 'पुढच्या पिढीसाठी नेतृत्वाचे मूल्य.'],
       ['star', 'Community first', 'समाज सहभाग', 'A dignified role for every citizen.', 'प्रत्येक नागरिकाचा सन्माननीय सहभाग.'],
     ] as const).map(([icon, en, marathi, desc, description]) => <article key={icon}><HeritageIcon kind={icon}/><h3>{mr ? marathi : en}</h3><p>{mr ? description : desc}</p></article>)}</div></section>
-    <section className="timeline-section campaign-journey"><div className="wrap"><p className="eyebrow light">{mr ? 'संकल्प ते साकार' : 'From vision to reality'}</p><h2>{mr ? 'प्रकल्पाचा प्रवास' : 'Project journey'}</h2><ol className="journey-steps">{journey.map(([en, marathi, status, marathiStatus], i) => <li key={en} className={i === 3 ? 'current' : ''}><span className="journey-dot">0{i + 1}</span><div><h3>{mr ? marathi : en}</h3><span className={i < 3 ? 'journey-complete' : ''}>{mr ? marathiStatus : status}</span>{i === 3 && <progress value={65} max={100} aria-label={mr ? 'उभारणी' : 'Construction'}/>}</div></li>)}</ol><NavLink className="link-arrow" to="/progress">{mr ? 'प्रकल्पाचे तपशील पहा' : 'Explore the project roadmap'} →</NavLink></div></section>
+    <section className="timeline-section campaign-journey"><div className="wrap"><p className="eyebrow light">{mr ? 'संकल्प ते साकार' : 'From vision to reality'}</p><h2>{mr ? 'प्रकल्पाचा प्रवास' : 'Project journey'}</h2><ol className="journey-steps">{journey.map(([en, marathi, status, marathiStatus], i) => <li key={en} className={i === 3 ? 'current' : ''} aria-current={i === 3 ? 'step' : undefined}><span className="journey-dot">0{i + 1}</span><div><h3>{mr ? marathi : en}</h3><span className={i < 3 ? 'journey-complete' : ''}>{mr ? marathiStatus : status}</span>{i === 3 && <progress value={65} max={100} aria-label={mr ? 'उभारणी' : 'Construction'}/>}</div></li>)}</ol><NavLink className="link-arrow" to="/progress">{mr ? 'प्रकल्पाचे तपशील पहा' : 'Explore the project roadmap'} →</NavLink></div></section>
     <HomeVideo lang={lang}/>
-    <Suspense fallback={<div className="section-loading wrap" role="status">{mr ? 'दालन उघडत आहे…' : 'Loading the gallery…'}</div>}><HeritageShowcase lang={lang}/></Suspense>
+    <Suspense fallback={<LoadingSkeleton label={mr ? 'दालन उघडत आहे…' : 'Loading the gallery…'}/>}><HeritageShowcase lang={lang}/></Suspense>
     <section className="news wrap"><p className="eyebrow">{mr ? 'जोडलेले रहा' : 'Stay connected'}</p><h2>{mr ? 'वारसा, सहभाग आणि प्रकल्प' : 'Heritage, community & the journey ahead'}</h2><div className="news-grid">{[['Heritage', 'वारसा'], ['Community', 'लोकसहभाग'], ['Project', 'प्रकल्प']].map(([en, marathi]) => <article key={en}><span>{mr ? 'श्री शिव प्रतिष्ठान' : 'Shri Shiv Pratishthan'}</span><h3>{mr ? marathi : en}</h3><NavLink to="/news">{mr ? 'लेख वाचा' : 'Explore the stories'} →</NavLink></article>)}</div></section>
   </main>;
 }
